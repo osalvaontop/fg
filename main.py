@@ -105,39 +105,57 @@ async def on_ready():
 
 
 async def load_cogs():
-    cogs_path = Path(__file__).parent / "cogs"
+    from pathlib import Path
 
-    print(f"📂 Procurando cogs em: {cogs_path}")
+
+async def load_cogs():
+    cogs_path = Path(__file__).resolve().parent / "cogs"
+
+    print(f"📂 Pasta dos cogs: {cogs_path}")
+    print(f"📂 A pasta existe? {cogs_path.exists()}")
+    print(f"📂 É uma pasta? {cogs_path.is_dir()}")
 
     if not cogs_path.exists():
-        print("❌ A pasta 'cogs' não existe.")
+        print("❌ A pasta cogs não foi encontrada.")
         return
 
-    files = list(cogs_path.glob("*.py"))
+    all_files = list(cogs_path.iterdir())
 
-    if not files:
-        print("⚠️ Nenhum arquivo .py encontrado na pasta cogs.")
+    print(f"📄 Tudo encontrado na pasta: {[file.name for file in all_files]}")
+
+    py_files = [
+        file
+        for file in all_files
+        if file.is_file()
+        and file.suffix == ".py"
+        and file.name != "__init__.py"
+    ]
+
+    print(f"🐍 Arquivos Python detectados: {[file.name for file in py_files]}")
+
+    if not py_files:
+        print("⚠️ Nenhum cog .py foi encontrado.")
         return
 
     loaded = 0
 
-    for file in files:
-        if file.name.startswith("_"):
-            continue
-
+    for file in py_files:
         extension = f"cogs.{file.stem}"
+
+        print(f"🔄 Tentando carregar: {extension}")
 
         try:
             await bot.load_extension(extension)
+
             loaded += 1
             print(f"✅ Cog carregado: {extension}")
 
         except Exception as error:
-            print(f"❌ Erro ao carregar {extension}")
-            print(f"   Tipo: {type(error).__name__}")
-            print(f"   Erro: {error}")
+            print(f"❌ Erro ao carregar: {extension}")
+            print(f"❌ Tipo: {type(error).__name__}")
+            print(f"❌ Detalhes: {error}")
 
-    print(f"📦 Total de cogs carregados: {loaded}")
+    print(f"📦 Resultado: {loaded}/{len(py_files)} cogs carregados.")
 
 async def main():
     start_flask()
