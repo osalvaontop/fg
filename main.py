@@ -109,8 +109,14 @@ async def load_cogs():
 
 
 async def load_cogs():
+    from pathlib import Path
+import traceback
+
+
+async def load_cogs():
     cogs_path = Path(__file__).resolve().parent / "cogs"
 
+    print("=" * 35)
     print(f"📂 Pasta dos cogs: {cogs_path}")
     print(f"📂 A pasta existe? {cogs_path.exists()}")
     print(f"📂 É uma pasta? {cogs_path.is_dir()}")
@@ -120,21 +126,20 @@ async def load_cogs():
         return
 
     all_files = list(cogs_path.iterdir())
-
     print(f"📄 Tudo encontrado na pasta: {[file.name for file in all_files]}")
 
     py_files = [
         file
         for file in all_files
         if file.is_file()
-        and file.suffix == ".py"
+        and file.suffix.lower() == ".py"
         and file.name != "__init__.py"
     ]
 
-    print(f"🐍 Arquivos Python detectados: {[file.name for file in py_files]}")
+    print(f"🐍 Cogs detectados: {[file.name for file in py_files]}")
 
     if not py_files:
-        print("⚠️ Nenhum cog .py foi encontrado.")
+        print("⚠️ Nenhum cog foi encontrado.")
         return
 
     loaded = 0
@@ -146,16 +151,15 @@ async def load_cogs():
 
         try:
             await bot.load_extension(extension)
-
             loaded += 1
             print(f"✅ Cog carregado: {extension}")
 
-        except Exception as error:
+        except Exception:
             print(f"❌ Erro ao carregar: {extension}")
-            print(f"❌ Tipo: {type(error).__name__}")
-            print(f"❌ Detalhes: {error}")
+            traceback.print_exc()
 
     print(f"📦 Resultado: {loaded}/{len(py_files)} cogs carregados.")
+    print("=" * 35)
 
 async def main():
     start_flask()
