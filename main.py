@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-TOKEN = "MTUyNTI3MTYxMzMwODc5Njk5OQ.GYgoC1.069ebUYxl4G1ENnI4sJ4Tyhaxq6gPisKOcyKpA"
+TOKEN = os.getenv("TOKEN")
 
 if not TOKEN:
     raise RuntimeError("A variável TOKEN não foi encontrada.")
