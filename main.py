@@ -7,7 +7,7 @@ import discord
 from flask import Flask
 from discord.ext import commands
 from dotenv import load_dotenv
-
+from pathlib import Path
 
 load_dotenv()
 
@@ -105,29 +105,39 @@ async def on_ready():
 
 
 async def load_cogs():
-    cogs_folder = "cogs"
+    cogs_path = Path(__file__).parent / "cogs"
 
-    if not os.path.exists(cogs_folder):
-        os.makedirs(cogs_folder)
-        print("📁 Pasta cogs criada.")
+    print(f"📂 Procurando cogs em: {cogs_path}")
+
+    if not cogs_path.exists():
+        print("❌ A pasta 'cogs' não existe.")
         return
 
-    for filename in os.listdir(cogs_folder):
-        if not filename.endswith(".py"):
+    files = list(cogs_path.glob("*.py"))
+
+    if not files:
+        print("⚠️ Nenhum arquivo .py encontrado na pasta cogs.")
+        return
+
+    loaded = 0
+
+    for file in files:
+        if file.name.startswith("_"):
             continue
 
-        if filename.startswith("_"):
-            continue
-
-        extension = f"cogs.{filename[:-3]}"
+        extension = f"cogs.{file.stem}"
 
         try:
             await bot.load_extension(extension)
+            loaded += 1
             print(f"✅ Cog carregado: {extension}")
 
         except Exception as error:
-            print(f"❌ Erro ao carregar {extension}: {error}")
+            print(f"❌ Erro ao carregar {extension}")
+            print(f"   Tipo: {type(error).__name__}")
+            print(f"   Erro: {error}")
 
+    print(f"📦 Total de cogs carregados: {loaded}")
 
 async def main():
     start_flask()
