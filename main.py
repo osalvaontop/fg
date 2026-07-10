@@ -11,15 +11,26 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-TOKEN = os.getenv("TOKEN", "").strip()
+TOKEN = os.getenv("TOKEN", "")
+
+print("=== DIAGNÓSTICO DO TOKEN ===")
+print(f"Existe: {bool(TOKEN)}")
+print(f"Tamanho: {len(TOKEN)}")
+print(f"Pontos: {TOKEN.count('.')}")
+print(f"Somente ASCII: {TOKEN.isascii()}")
+print(f"Começa com aspas: {TOKEN.startswith(('\"', \"'\"))}")
+print(f"Termina com aspas: {TOKEN.endswith(('\"', \"'\"))}")
+print(f"Começa com 'Bot ': {TOKEN.startswith('Bot ')}")
+print(f"Espaços/quebras nas pontas: {TOKEN != TOKEN.strip()}")
+print("============================")
+
+TOKEN = TOKEN.strip().strip('"').strip("'")
+
+if TOKEN.startswith("Bot "):
+    TOKEN = TOKEN[4:].strip()
 
 if not TOKEN:
-    raise RuntimeError(
-        "A variável de ambiente TOKEN não foi encontrada ou está vazia."
-    )
-
-print(f"🔑 TOKEN encontrado: {len(TOKEN)} caracteres")
-print(f"🔍 Início: {TOKEN[:4]}... Final: ...{TOKEN[-4:]}")
+    raise RuntimeError("TOKEN vazio.")
 
 
 # =========================
