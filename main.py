@@ -11,10 +11,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-TOKEN = os.getenv("TOKEN")
+TOKEN = os.getenv("TOKEN", "").strip()
 
 if not TOKEN:
-    raise RuntimeError("A variável TOKEN não foi encontrada.")
+    raise RuntimeError(
+        "A variável de ambiente TOKEN não foi encontrada ou está vazia."
+    )
+
+print(f"🔑 TOKEN encontrado: {len(TOKEN)} caracteres")
+print(f"🔍 Início: {TOKEN[:4]}... Final: ...{TOKEN[-4:]}")
 
 
 # =========================
